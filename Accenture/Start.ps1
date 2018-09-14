@@ -20,7 +20,11 @@ function Get-List1 () {
 
     switch ( $StepNumber ) {
         0 {  }
-        1 { Copy-SeFile 3 "C:\Users\oleksandr.dubyna\Documents\GIT\SE\SeDevOps\Accenture\List1\xmlFile.xml" }
+        1 {     
+            # Copy-SeFile 3 "C:\Users\oleksandr.dubyna\Documents\GIT\SE\SeDevOps\Accenture\List1\xmlFile.xml"
+            # Set-SeValueForLine 3 "123" "C:\Users\oleksandr.dubyna\Documents\GIT\SE\SeDevOps\Accenture\List1\xmlFile.xml"
+            # Set-SeValueForLineorFiles 3 "123" "C:\Users\oleksandr.dubyna\Documents\GIT\SE\SeDevOps\Accenture\List1\xmlFile.xml" 
+        }
     }
 }
 function Show-Menu () {
@@ -28,8 +32,7 @@ function Show-Menu () {
 }
 
 function Test () {
-    # Copy-SeFile 3 "C:\Users\oleksandr.dubyna\Documents\GIT\SE\SeDevOps\Accenture\List1\xmlFile.xml"
-    Set-SeValueForLine 3 "123" "C:\Users\oleksandr.dubyna\Documents\GIT\SE\SeDevOps\Accenture\List1\xmlFile.xml"
+
 }
 
 Show-Menu

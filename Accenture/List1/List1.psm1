@@ -32,3 +32,23 @@ function Set-SeValueForLine {
         Set-Content -Path $pathToFile -Value $filecontent
     }
 }
+
+function Set-SeValueForLineorFiles{
+    param (
+        [byte]$lineNumberStart,
+        [string]$valueStart,
+        [string]$pathToFile
+    )
+
+    $dir = (Get-Item $pathToFile).Directory
+    $baseName = (Get-Item $pathToFile).BaseName
+    $baseExtention = (Get-Item $pathToFile).Extension
+    $count = 0
+
+    Get-ChildItem -Path $dir -Filter "$baseName*$baseExtention" | ForEach-Object {
+        $count++
+        Set-SeValueForLine $lineNumberStart $valueStart $_.FullName
+        $lineNumberStart++
+        $valueStart = "$valueStart.$count"
+    }
+}

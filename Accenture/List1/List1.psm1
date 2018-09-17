@@ -122,3 +122,19 @@ function Get-SeTask5 {
         Write-Host "[Output]: var value is: $var"
     } 
 }
+
+function Get-SeTask6 {
+    param (
+        [bool]$isCheck
+    )
+    
+    Write-Host "[Output]: ************* " -ForegroundColor DarkGreen
+    
+    if ($isCheck) {
+        Write-Host "[Output]: var value is true"
+        Get-WmiObject -Class Win32_logicaldisk
+    }
+    else {
+        Write-Host "[Output]: var value is false"
+    }
+}

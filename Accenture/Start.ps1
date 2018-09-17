@@ -41,8 +41,14 @@ function Get-List1 () {
             Get-SeTask5 "123"
             Get-SeTask5 
         }
-        6 {  }
-        7 {  }
+        6 { 
+            Get-SeTask6 $true
+            Get-SeTask6 $false
+            Get-SeTask6
+         }
+        7 { 
+            
+         }
     }
 }
 function Show-Menu () {

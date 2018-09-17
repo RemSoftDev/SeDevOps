@@ -34,7 +34,7 @@ function Get-List1 () {
             Get-SeTask3 $path
         }
         4 { 
-
+            Get-SeTask4
         }
         5 { 
 

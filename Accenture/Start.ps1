@@ -14,17 +14,23 @@ function Get-List1 () {
     Show-MenuList1
     $StepNumber = 0
     $StepNumber = Read-Host "Choose a step number. Default is 0"   
-    if (!$StepNumber) {
-
-    }
 
     switch ( $StepNumber ) {
         0 {  }
         1 {     
-            # Copy-SeFile 3 "C:\Users\oleksandr.dubyna\Documents\GIT\SE\SeDevOps\Accenture\List1\xmlFile.xml"
-            # Set-SeValueForLine 3 "123" "C:\Users\oleksandr.dubyna\Documents\GIT\SE\SeDevOps\Accenture\List1\xmlFile.xml"
-            # Set-SeValueForLineorFiles 3 "123" "C:\Users\oleksandr.dubyna\Documents\GIT\SE\SeDevOps\Accenture\List1\xmlFile.xml" 
+            $path = Join-Path -Path $ScriptRoot -ChildPath  "List1\task1.xml"
+            Copy-SeFile 3 $path 
+            Set-SeValueForLineorFiles 3 "123" $path 
         }
+        2 { 
+            $path = Join-Path -Path $ScriptRoot -ChildPath  "List1\task2.json"
+            Set-SeTask2 $path
+        }
+        3 {  }
+        4 {  }
+        5 {  }
+        6 {  }
+        7 {  }
     }
 }
 function Show-Menu () {
@@ -32,7 +38,7 @@ function Show-Menu () {
 }
 
 function Test () {
-
+    
 }
 
 Show-Menu

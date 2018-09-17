@@ -52,3 +52,14 @@ function Set-SeValueForLineorFiles{
         $valueStart = "$valueStart.$count"
     }
 }
+
+function Set-SeTask2 {
+    param (
+        [string]$pathToFile
+    )
+    $obj = (Get-Content $pathToFile) | ConvertFrom-Json
+    $obj.glossary.GlossDiv.GlossList.GlossEntry.SortAs = "OMPL"
+
+    $filecontent = $obj | ConvertTo-Json -Depth 32
+    Set-Content -Path $pathToFile -Value $filecontent
+}

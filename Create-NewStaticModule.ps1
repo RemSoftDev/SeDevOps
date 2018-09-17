@@ -31,4 +31,4 @@ function New-SE_StaticModule {
 }
 
 $pathToModule = Join-Path -Path (Resolve-Path .) -ChildPath "Accenture"
-New-SE_StaticModule "List1" $pathToModule
+New-SE_StaticModule "List2" $pathToModule

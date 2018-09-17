@@ -12,11 +12,13 @@ function Show-MenuList () {
     }
 }
 
+$readHostText = "Choose a step number. Default is 0"
+
 function Get-List1 () {
 
     Show-MenuList 6 "List1"
     $StepNumber = 0
-    $StepNumber = Read-Host "Choose a step number. Default is 0"   
+    $StepNumber = Read-Host $readHostText  
 
     switch ( $StepNumber ) {
         0 {  }
@@ -48,16 +50,45 @@ function Get-List1 () {
          }
     }
 }
+function Get-List2 () {
+
+    Show-MenuList 6 "List2"
+    $StepNumber = 0
+    $StepNumber = Read-Host $readHostText   
+
+    switch ( $StepNumber ) {
+        0 {  }
+        1 {     
+
+        }
+        2 { 
+
+        }
+        3 { 
+
+        }
+        4 { 
+
+        }
+        5 { 
+
+        }
+        6 { 
+
+        }
+    }
+}
 function Show-Menu () {
     Write-Host "1: List1 tasks" -ForegroundColor Magenta
+    Write-Host "2: List2 tasks" -ForegroundColor Magenta
 }
 
 function Test () {
-    Get-SeTask5
+
 }
 
 Show-Menu
-$StepNumber = Read-Host "Choose a step number. Default is 0"
+$StepNumber = Read-Host $readHostText
 if (!$StepNumber) {
     $StepNumber = 0
 }
@@ -65,4 +96,5 @@ if (!$StepNumber) {
 switch ( $StepNumber ) {
     0 { Test }
     1 { Get-List1 }
+    1 { Get-List2 }
 }

@@ -111,6 +111,8 @@ function Get-SeTask5 {
     param (
         [string]$var
     )
+    Write-Host "[Output]: ************* " -ForegroundColor DarkGreen
+
     if ([string]::IsNullOrEmpty($var))
     {
         Write-Host "[Output]: var is IsNullOrEmpty"

@@ -37,7 +37,9 @@ function Get-List1 () {
             Get-SeTask4
         }
         5 { 
-
+            Get-SeTask5 ""
+            Get-SeTask5 "123"
+            Get-SeTask5 
         }
         6 {  }
         7 {  }
@@ -48,7 +50,7 @@ function Show-Menu () {
 }
 
 function Test () {
-    Get-SeTask5 ""
+    Get-SeTask5
 }
 
 Show-Menu

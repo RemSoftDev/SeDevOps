@@ -48,8 +48,7 @@ function Show-Menu () {
 }
 
 function Test () {
-    $path = Join-Path -Path $ScriptRoot -ChildPath  "List1\task3.json"
-    Get-SeTask3 $path
+    Get-SeTask5 ""
 }
 
 Show-Menu

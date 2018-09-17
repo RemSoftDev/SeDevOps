@@ -105,5 +105,18 @@ function Get-SeTask4 {
         Write-Host "[Output]: File exists with next path: $destination" -ForegroundColor DarkGreen
         Write-Host "[Output]: File was downloaded from url: $source" -ForegroundColor DarkGreen
     }
+}
 
+function Get-SeTask5 {
+    param (
+        [string]$var
+    )
+    if ([string]::IsNullOrEmpty($var))
+    {
+        Write-Host "[Output]: var is IsNullOrEmpty"
+        Get-SeTask5 ([guid]::NewGuid())
+    }
+    else {
+        Write-Host "[Output]: var value is: $var"
+    } 
 }

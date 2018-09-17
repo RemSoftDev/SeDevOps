@@ -14,7 +14,7 @@ function Show-MenuList () {
 
 function Get-List1 () {
 
-    Show-MenuList 10 "List1"
+    Show-MenuList 6 "List1"
     $StepNumber = 0
     $StepNumber = Read-Host "Choose a step number. Default is 0"   
 
@@ -45,9 +45,6 @@ function Get-List1 () {
             Get-SeTask6 $true
             Get-SeTask6 $false
             Get-SeTask6
-         }
-        7 { 
-            
          }
     }
 }

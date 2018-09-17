@@ -1,0 +1,22 @@
+[
+    {
+        "RgName": "DOTcom-dev-rg",
+        "Name": "dev",
+        "AppName": "devse-cd"
+    },
+    {
+        "RgName": "DOTcom-dev-rg",
+        "Name": "dev-cm",
+        "AppName": "devse-cm"
+    },
+    {
+        "RgName": "DOTcom-uat-rg",
+        "Name": "uat",
+        "AppName": "uatse-cd"
+    },
+    {
+        "RgName": "DOTcom-uat-rg",
+        "Name": "uat-cm",
+        "AppName": "uatse-cm"
+    }
+]

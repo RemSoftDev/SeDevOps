@@ -1,17 +1,20 @@
 $ScriptRoot = $PSScriptRoot
 Import-Module -Force (Join-Path $ScriptRoot 'List1\List1') 
 Get-Module
-function Show-MenuList1 () {
-    Write-Host "1: List1 task 1" -ForegroundColor DarkGreen
-    Write-Host "2: List1 task 2" -ForegroundColor DarkGreen
-    Write-Host "3: List1 task 3" -ForegroundColor DarkGreen
-    Write-Host "4: List1 task 4" -ForegroundColor DarkGreen
-    Write-Host "5: List1 task 5" -ForegroundColor DarkGreen
+function Show-MenuList () {
+    param (
+        [byte]$count,
+        [string]$listName
+    )
+
+    for ($i = 1; $i -le $count; $i++) {
+        Write-Host "$i - $listName task $i" -ForegroundColor DarkGreen
+    }
 }
 
 function Get-List1 () {
 
-    Show-MenuList1
+    Show-MenuList 10 "List1"
     $StepNumber = 0
     $StepNumber = Read-Host "Choose a step number. Default is 0"   
 
@@ -26,9 +29,16 @@ function Get-List1 () {
             $path = Join-Path -Path $ScriptRoot -ChildPath  "List1\task2.json"
             Set-SeTask2 $path
         }
-        3 {  }
-        4 {  }
-        5 {  }
+        3 { 
+            $path = Join-Path -Path $ScriptRoot -ChildPath  "List1\task3.json"
+            Get-SeTask3 $path
+        }
+        4 { 
+
+        }
+        5 { 
+
+        }
         6 {  }
         7 {  }
     }
@@ -38,7 +48,8 @@ function Show-Menu () {
 }
 
 function Test () {
-    
+    $path = Join-Path -Path $ScriptRoot -ChildPath  "List1\task3.json"
+    Get-SeTask3 $path
 }
 
 Show-Menu

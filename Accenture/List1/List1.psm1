@@ -57,9 +57,25 @@ function Set-SeTask2 {
     param (
         [string]$pathToFile
     )
-    $obj = (Get-Content $pathToFile) | ConvertFrom-Json
+    $obj = Get-Content $pathToFile | ConvertFrom-Json
     $obj.glossary.GlossDiv.GlossList.GlossEntry.SortAs = "OMPL"
 
     $filecontent = $obj | ConvertTo-Json -Depth 32
     Set-Content -Path $pathToFile -Value $filecontent
+}
+
+function Get-SeTask3 {
+    param (
+        [string]$pathToFile
+    )
+    $count = 0
+    $obj = [Task3Unit[]](Get-Content $pathToFile | ConvertFrom-Json)
+    $obj | ForEach-Object {
+        Write-Host ("Obj number is: {0}" -f $count) -ForegroundColor DarkGreen
+        $_.PSObject.Properties | ForEach-Object {
+            Write-Host ("Prop name is: {0}" -f $_.Name) -ForegroundColor DarkMagenta
+            Write-Host ("Prop value is: {0}" -f $_.Value) -ForegroundColor DarkCyan
+        }
+        $count++
+    }
 }

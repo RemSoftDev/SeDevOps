@@ -1,5 +1,6 @@
 $ScriptRoot = $PSScriptRoot
 Import-Module -Force (Join-Path $ScriptRoot 'List1\List1') 
+Import-Module -Force (Join-Path $ScriptRoot 'List2\List2') 
 Get-Module
 function Show-MenuList () {
     param (
@@ -47,7 +48,7 @@ function Get-List1 () {
             Get-SeTask6 $true
             Get-SeTask6 $false
             Get-SeTask6
-         }
+        }
     }
 }
 function Get-List2 () {
@@ -59,7 +60,8 @@ function Get-List2 () {
     switch ( $StepNumber ) {
         0 {  }
         1 {     
-
+            $path = Join-Path -Path $ScriptRoot -ChildPath  "List1"
+            Get-SeList2Task1 $path
         }
         2 { 
 
@@ -84,7 +86,7 @@ function Show-Menu () {
 }
 
 function Test () {
-
+   
 }
 
 Show-Menu

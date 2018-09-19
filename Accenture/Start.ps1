@@ -59,13 +59,14 @@ function Get-List2 () {
     $StepNumber = Read-Host $readHostText   
 
     switch ( $StepNumber ) {
-        0 {  }
+        0 { Remove-AzureRmResourceGroup }
         1 {     
             $path = Join-Path -Path $ScriptRoot -ChildPath  "List1"
             Get-SeList2Task1 $path
         }
         2 { 
-
+            $path = Join-Path -Path $ScriptRoot -ChildPath  "List2\devops.bacpac"
+            Get-SeList2Task2 $path
         }
         3 { 
 
@@ -87,7 +88,7 @@ function Show-Menu () {
 }
 
 function Test () {
-    Get-SeList2Task2
+
 }
 
 Show-Menu

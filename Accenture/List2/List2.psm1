@@ -226,6 +226,113 @@ function Set-IfNotExistsAzureRmSqlDatabase {
         Write-Host "[Output]:AzureRmSqlDatabase with name: $databasename exists " -ForegroundColor DarkGreen
     }
 }
+
+function Set-IfNotExistsAzureRmSqlDatabaseImport {
+    param (
+        [string]$servername,
+        [string]$databasename,
+        [System.Object]$storageKey,
+        [System.Object]$bacpacUri,
+        [string]$adminlogin,
+        [System.Object]$passwordSecure
+    )
+
+    Get-AzureRmSqlDatabase `
+        -ResourceGroupName $resourceGroup `
+        -ServerName $servername `
+        -DatabaseName $databasename `
+        -ErrorAction SilentlyContinue `
+        -ErrorVariable notPresentAzureRmSqlDatabaseImport
+
+    if ($notPresentAzureRmSqlDatabaseImport) {
+        Write-Host "[Output]:AzureRmSqlDatabaseImport with name: $databasename does not exists " -ForegroundColor DarkGreen
+        Write-Host "[Output]:AzureRmSqlDatabaseImport with name: $databasename creating " -ForegroundColor DarkMagenta
+
+        $importRequest = New-AzureRmSqlDatabaseImport `
+            -ResourceGroupName $resourceGroup `
+            -ServerName $servername `
+            -DatabaseName $databasename `
+            -DatabaseMaxSizeBytes "262144000" `
+            -StorageKeyType "StorageAccessKey" `
+            -StorageKey $storageKey `
+            -StorageUri $bacpacUri `
+            -Edition "Standard" `
+            -ServiceObjectiveName "S3" `
+            -AdministratorLogin "$adminlogin" `
+            -AdministratorLoginPassword $passwordSecure
+
+        Write-Host "[Output]:AzureRmSqlDatabaseImport. Check import status and wait for the import to complete.." -ForegroundColor DarkGreen
+        $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
+        [Console]::Write("Importing")
+        while ($importStatus.Status -eq "InProgress") {
+            $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
+            [Console]::Write(".")
+            Start-Sleep -s 10
+        }
+        [Console]::WriteLine("")
+        $importStatus
+
+        # Scale down to S0 after import is complete
+        Write-Host "[Output]:AzureRmSqlDatabaseImport. Scale down to S0 after import is complete.." -ForegroundColor DarkGreen
+        Set-AzureRmSqlDatabase `
+            -ResourceGroupName $resourceGroup `
+            -ServerName $servername `
+            -DatabaseName $databasename  `
+            -Edition "Standard" `
+            -RequestedServiceObjectiveName "S0"
+    }
+    else {
+        Write-Host "[Output]:AzureRmSqlDatabaseImport with name: $databasename exists. Bacpac can not be imported" -ForegroundColor DarkRed
+    }
+}
+
+function Set-IfExistsAzureRmSqlDatabaseExport {
+    param (
+        [string]$servername,
+        [string]$databasename,
+        [System.Object]$storageKey,
+        [System.Object]$bacpacUri,
+        [string]$adminlogin,
+        [System.Object]$passwordSecure
+    )
+
+    Get-AzureRmSqlDatabase `
+        -ResourceGroupName $resourceGroup `
+        -ServerName $servername `
+        -DatabaseName $databasename `
+        -ErrorAction SilentlyContinue `
+        -ErrorVariable notPresentAzureRmSqlDatabaseImport
+
+    if (-not $notPresentAzureRmSqlDatabaseImport) {
+        Write-Host "[Output]:IfExistsAzureRmSqlDatabaseExport with name: $databasename exists" -ForegroundColor DarkGreen
+        Write-Host "[Output]:IfExistsAzureRmSqlDatabaseExport with name: $databasename exporting" -ForegroundColor DarkMagenta
+
+        $importRequest = New-AzureRmSqlDatabaseExport `
+            -ResourceGroupName $resourceGroup `
+            -ServerName $servername `
+            -DatabaseName $databasename `
+            -StorageKeyType "StorageAccessKey" `
+            -StorageKey $storageKey `
+            -StorageUri $bacpacUri `
+            -AdministratorLogin "$adminlogin" `
+            -AdministratorLoginPassword $passwordSecure
+
+        Write-Host "[Output]:IfExistsAzureRmSqlDatabaseExport. Check export status and wait for the export to complete.." -ForegroundColor DarkGreen
+        $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
+        [Console]::Write("Exporting")
+        while ($importStatus.Status -eq "InProgress") {
+            $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
+            [Console]::Write(".")
+            Start-Sleep -s 10
+        }
+        [Console]::WriteLine("")
+        $importStatus
+    }
+    else {
+        Write-Host "[Output]:IfExistsAzureRmSqlDatabaseExport with name: $databasename does not exists. Bacpac can not be exported" -ForegroundColor DarkRed
+    }
+}
+
 function Get-AllAzureRmSqlDatabase {
     param (
         [string]$servername
@@ -250,28 +357,32 @@ function Set-BacpacToBlob {
         -File $pathToBacpac `
         -Blob $filepath.Name `
         -Container $containerName `
-        -Context $ctx 
+        -Context $ctx `
+        -Force
 
     Get-SeAzureStorageBlobNames $containerName $ctx 
+    Write-Host "[Output]: AzureStorageBlobContent url is: $($res.IcloudBlob.Uri.AbsoluteUri) " -ForegroundColor DarkGreen
 
     return [System.Uri]$res.IcloudBlob.Uri
 }
 function Get-SeList2Task2 {
+    param (
+        [string]$pathToBacpac
+    )
+
     Get-LoginToAzureRm
 
     # Set an admin login and password for your server
     $adminlogin = "ServerAdmin"
     $password = "ChangeYourAdminPassword1"
+    $passwordSecure = ConvertTo-SecureString -String $password -AsPlainText -Force
+    $storageKey = (Get-AzureRmStorageAccountKey -ResourceGroupName $resourceGroup -StorageAccountName $storageAccountName).Value[0]
     # Set server name - the logical server name has to be unique in the system
     # $servername = "server-$(Get-Random)"
     $servername = "server-devops"
     # The sample database name
     $databasename1 = "mySampleDatabase1"
     $databasename2 = "mySampleDatabase2"
-    $databasename3 = "mySampleDatabase3"
-    $databasename11 = "mySampleDatabase11"
-    $databasename22 = "mySampleDatabase22"
-    $databasename33 = "mySampleDatabase33"
     # The ip address range that you want to allow to access your server
     $firewallRuleName = "AllowedIPs"
     $ip = Invoke-RestMethod "http://ipinfo.io/json" | Select-Object -exp ip
@@ -281,7 +392,7 @@ function Get-SeList2Task2 {
     Set-IfNotExistsAzureRmResourceGroup $resourceGroup $location
 
     # Create a server with a system wide unique server name
-    $sqlAdministratorCredentials = $(New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $adminlogin, $(ConvertTo-SecureString -String $password -AsPlainText -Force))
+    $sqlAdministratorCredentials = $(New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $adminlogin, $passwordSecure)
     Set-IfNotExistsAzureRmSqlServer $servername  $sqlAdministratorCredentials
 
     # Create a server firewall rule that allows access from the specified IP range
@@ -290,45 +401,19 @@ function Get-SeList2Task2 {
     # # Create a blank database with an S0 performance level
     Get-AllAzureRmSqlDatabase $servername
     Set-IfNotExistsAzureRmSqlDatabase $servername $databasename1
-    Set-IfNotExistsAzureRmSqlDatabase $servername $databasename2
-    Set-IfNotExistsAzureRmSqlDatabase $servername $databasename3
     Get-AllAzureRmSqlDatabase $servername
 
-    $bacpacUri = Set-BacpacToBlob "C:\Users\oleksandr.dubyna\Downloads\devops.bacpac"
+    $bacpacUriImport = Set-BacpacToBlob $pathToBacpac
 
     # Import bacpac to database with an S3 performance level
-    $importRequest = New-AzureRmSqlDatabaseImport `
-        -ResourceGroupName $resourceGroup `
-        -ServerName $servername `
-        -DatabaseName $databasename11 `
-        -DatabaseMaxSizeBytes "262144000" `
-        -StorageKeyType "StorageAccessKey" `
-        -StorageKey $(Get-AzureRmStorageAccountKey -ResourceGroupName $resourceGroup -StorageAccountName $storageAccountName).Value[0] `
-        -StorageUri $bacpacUri[-1] `
-        -Edition "Standard" `
-        -ServiceObjectiveName "S3" `
-        -AdministratorLogin "$adminlogin" `
-        -AdministratorLoginPassword $(ConvertTo-SecureString -String $password -AsPlainText -Force)
+    Set-IfNotExistsAzureRmSqlDatabaseImport $servername $databasename2 $storageKey $bacpacUriImport[-1] $adminlogin $passwordSecure
+    
+    $databasenameExport = $databasename1
+    $bacpacUriExport = "http://$storageAccountName.blob.core.windows.net/$containerName/$databasenameExport.bacpac"
+    Set-IfExistsAzureRmSqlDatabaseExport $servername $databasenameExport $storageKey $bacpacUriExport $adminlogin $passwordSecure
+}
 
-    # Check import status and wait for the import to complete
-# $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
-# [Console]::Write("Importing")
-# while ($importStatus.Status -eq "InProgress")
-# {
-#     $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
-#     [Console]::Write(".")
-#     Start-Sleep -s 10
-# }
-# [Console]::WriteLine("")
-# $importStatus
-
-# # Scale down to S0 after import is complete
-# Set-AzureRmSqlDatabase -ResourceGroupName $resourcegroupname `
-#     -ServerName $servername `
-#     -DatabaseName $databasename  `
-#     -Edition "Standard" `
-#     -RequestedServiceObjectiveName "S0"
-
-    # Clean up deployment 
-    # Remove-AzureRmResourceGroup -ResourceGroupName $resourcegroupname
+function  Remove-AzureRmResourceGroup{
+    Write-Host "[Output]: Remove-AzureRmResourceGroup" -ForegroundColor DarkGreen
+    Remove-AzureRmResourceGroup -ResourceGroupName $resourceGroup -Force 
 }

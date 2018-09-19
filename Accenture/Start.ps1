@@ -1,3 +1,4 @@
+$ErrorActionPreference = "Stop"
 $ScriptRoot = $PSScriptRoot
 Import-Module -Force (Join-Path $ScriptRoot 'List1\List1') 
 Import-Module -Force (Join-Path $ScriptRoot 'List2\List2') 
@@ -86,7 +87,7 @@ function Show-Menu () {
 }
 
 function Test () {
-   
+    Get-SeList2Task2
 }
 
 Show-Menu
@@ -98,5 +99,5 @@ if (!$StepNumber) {
 switch ( $StepNumber ) {
     0 { Test }
     1 { Get-List1 }
-    1 { Get-List2 }
+    2 { Get-List2 }
 }

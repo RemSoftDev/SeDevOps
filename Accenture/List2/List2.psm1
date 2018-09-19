@@ -227,6 +227,23 @@ function Set-IfNotExistsAzureRmSqlDatabase {
     }
 }
 
+function Get-Status {
+    param (
+        [string]$text,
+        [System.Object]$operationStatusLink
+    )
+    
+    Write-Host "[Output]:Check $text status and wait for the $text to complete.." -ForegroundColor DarkGreen
+    $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $operationStatusLink
+    [Console]::Write("$($text)ing")
+    while ($importStatus.Status -eq "InProgress") {
+        $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $operationStatusLink
+        [Console]::Write(".")
+        Start-Sleep -s 10
+    }
+    [Console]::WriteLine("")
+    $importStatus
+}
 function Set-IfNotExistsAzureRmSqlDatabaseImport {
     param (
         [string]$servername,
@@ -248,7 +265,7 @@ function Set-IfNotExistsAzureRmSqlDatabaseImport {
         Write-Host "[Output]:AzureRmSqlDatabaseImport with name: $databasename does not exists " -ForegroundColor DarkGreen
         Write-Host "[Output]:AzureRmSqlDatabaseImport with name: $databasename creating " -ForegroundColor DarkMagenta
 
-        $importRequest = New-AzureRmSqlDatabaseImport `
+        $request = New-AzureRmSqlDatabaseImport `
             -ResourceGroupName $resourceGroup `
             -ServerName $servername `
             -DatabaseName $databasename `
@@ -261,16 +278,7 @@ function Set-IfNotExistsAzureRmSqlDatabaseImport {
             -AdministratorLogin "$adminlogin" `
             -AdministratorLoginPassword $passwordSecure
 
-        Write-Host "[Output]:AzureRmSqlDatabaseImport. Check import status and wait for the import to complete.." -ForegroundColor DarkGreen
-        $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
-        [Console]::Write("Importing")
-        while ($importStatus.Status -eq "InProgress") {
-            $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
-            [Console]::Write(".")
-            Start-Sleep -s 10
-        }
-        [Console]::WriteLine("")
-        $importStatus
+        Get-Status "import" $request.OperationStatusLink
 
         # Scale down to S0 after import is complete
         Write-Host "[Output]:AzureRmSqlDatabaseImport. Scale down to S0 after import is complete.." -ForegroundColor DarkGreen
@@ -307,7 +315,7 @@ function Set-IfExistsAzureRmSqlDatabaseExport {
         Write-Host "[Output]:IfExistsAzureRmSqlDatabaseExport with name: $databasename exists" -ForegroundColor DarkGreen
         Write-Host "[Output]:IfExistsAzureRmSqlDatabaseExport with name: $databasename exporting" -ForegroundColor DarkMagenta
 
-        $importRequest = New-AzureRmSqlDatabaseExport `
+        $request = New-AzureRmSqlDatabaseExport `
             -ResourceGroupName $resourceGroup `
             -ServerName $servername `
             -DatabaseName $databasename `
@@ -317,16 +325,7 @@ function Set-IfExistsAzureRmSqlDatabaseExport {
             -AdministratorLogin "$adminlogin" `
             -AdministratorLoginPassword $passwordSecure
 
-        Write-Host "[Output]:IfExistsAzureRmSqlDatabaseExport. Check export status and wait for the export to complete.." -ForegroundColor DarkGreen
-        $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
-        [Console]::Write("Exporting")
-        while ($importStatus.Status -eq "InProgress") {
-            $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
-            [Console]::Write(".")
-            Start-Sleep -s 10
-        }
-        [Console]::WriteLine("")
-        $importStatus
+        Get-Status "export" $request.OperationStatusLink
     }
     else {
         Write-Host "[Output]:IfExistsAzureRmSqlDatabaseExport with name: $databasename does not exists. Bacpac can not be exported" -ForegroundColor DarkRed
@@ -413,7 +412,7 @@ function Get-SeList2Task2 {
     Set-IfExistsAzureRmSqlDatabaseExport $servername $databasenameExport $storageKey $bacpacUriExport $adminlogin $passwordSecure
 }
 
-function  Remove-AzureRmResourceGroup{
+function  Remove-AzureRmResourceGroup {
     Write-Host "[Output]: Remove-AzureRmResourceGroup" -ForegroundColor DarkGreen
     Remove-AzureRmResourceGroup -ResourceGroupName $resourceGroup -Force 
 }

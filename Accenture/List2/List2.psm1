@@ -416,3 +416,33 @@ function  Remove-AzureRmResourceGroup {
     Write-Host "[Output]: Remove-AzureRmResourceGroup" -ForegroundColor DarkGreen
     Remove-AzureRmResourceGroup -ResourceGroupName $resourceGroup -Force 
 }
+
+function Get-SeList2Task3 {
+    param (
+        [string]$path
+    )
+    $fileNameToSaveAzureContext = "AzureContext.json"
+    $filePathToSaveAzureContext = Join-Path -Path $path -ChildPath $fileNameToSaveAzureContext
+
+    Write-Host "[Output]: Login to your azure account manualy." -ForegroundColor DarkGreen
+    Login-AzureRmAccount 
+
+    Write-Host "[Output]: Saving your current azure context to file with path: $filePathToSaveAzureContext" -ForegroundColor DarkGreen
+    Save-AzureRmContext -Path $filePathToSaveAzureContext -Force
+
+    Write-Host "[Output]: Current azure context is:" -ForegroundColor DarkGreen
+    Get-AzureRmContext
+
+    Write-Host "[Output]: Logout[Remove] from current azure context" -ForegroundColor DarkGreen
+    $azureContextName = (Get-AzureRmContext | Select-Object Name).Name
+    Remove-AzureRmContext -Name $azureContextName -Force
+
+    Write-Host "[Output]: Current azure context is:" -ForegroundColor DarkGreen
+    Get-AzureRmContext
+
+    Write-Host "[Output]: Login to your azure account using file with context" -ForegroundColor DarkGreen
+    Import-AzureRmContext -Path $filePathToSaveAzureContext
+
+    Write-Host "[Output]: Current azure context is:" -ForegroundColor DarkGreen
+    Get-AzureRmContext
+}

@@ -88,7 +88,8 @@ function Show-Menu () {
 }
 
 function Test () {
-
+    $path = Join-Path -Path $ScriptRoot -ChildPath  "List2"
+    Get-SeList2Task3 $path
 }
 
 Show-Menu

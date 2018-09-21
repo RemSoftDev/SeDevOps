@@ -1,37 +1,39 @@
-$resourceGroup = "DevOpsGroup"
-$location = "westeurope" 
+$resourceGroupName = "DevOpsGroup"
+$resourceGroupLocation = "westeurope" 
+$tenantId = "9b27efeb-3711-4191-8a0f-6b5317453890"
+$subscriptionId = "dd173c75-3d03-4114-9135-916d3e0db71e"
 $storageAccountName = "devopsstorageaccount123"
 $containerName = "quickstartblobs"
 function Set-IfNotExistsAzureRmResourceGroup {
     param (
-        [string]$resourceGroup,
-        [string]$location
+        [string]$resourceGroupName,
+        [string]$resourceGroupLocation
     )
 
     Get-AzureRmResourceGroup `
-        -Name $resourceGroup `
+        -Name $resourceGroupName `
         -ErrorAction SilentlyContinue `
         -ErrorVariable notPresentResourceGroup
 
     if ($notPresentResourceGroup) {
-        Write-Host "[Output]:AzureRmResourceGroup with name: $resourceGroup does not exists " -ForegroundColor DarkGreen
-        Write-Host "[Output]:AzureRmResourceGroup with name: $resourceGroup creating " -ForegroundColor DarkMagenta
+        Write-Host "[Output]:AzureRmResourceGroup with name: $resourceGroupName does not exists " -ForegroundColor DarkGreen
+        Write-Host "[Output]:AzureRmResourceGroup with name: $resourceGroupName creating " -ForegroundColor DarkMagenta
 
-        New-AzureRmResourceGroup -Name $resourceGroup -Location $location
+        New-AzureRmResourceGroup -Name $resourceGroupName -Location $resourceGroupLocation
     }
     else {
-        Write-Host "[Output]:AzureRmResourceGroup with name: $resourceGroup exists " -ForegroundColor DarkGreen
+        Write-Host "[Output]:AzureRmResourceGroup with name: $resourceGroupName exists " -ForegroundColor DarkGreen
     }    
 }
 function Set-IfNotExistsAzureRmStorageAccount {
     param (
-        [string]$resourceGroup,
-        [string]$location,
+        [string]$resourceGroupName,
+        [string]$resourceGroupLocation,
         [string]$storageAccountName
     )
 
     $storageAccount = Get-AzureRmStorageAccount `
-        -ResourceGroupName $resourceGroup `
+        -ResourceGroupName $resourceGroupName `
         -Name $storageAccountName `
         -ErrorAction SilentlyContinue `
         -ErrorVariable notPresentStorageAccount
@@ -42,9 +44,9 @@ function Set-IfNotExistsAzureRmStorageAccount {
 
         $storageAccount = 
         New-AzureRmStorageAccount `
-            -ResourceGroupName $resourceGroup `
+            -ResourceGroupName $resourceGroupName `
             -Name $storageAccountName `
-            -Location $location `
+            -Location $resourceGroupLocation `
             -SkuName Standard_LRS `
             -Kind Storage
     }  
@@ -112,8 +114,8 @@ function Get-LoginToAzureRm {
     Connect-AzureRmAccount `
         -ServicePrincipal `
         -Credential $mycreds `
-        -TenantId "9b27efeb-3711-4191-8a0f-6b5317453890" `
-        -Subscription "dd173c75-3d03-4114-9135-916d3e0db71e" `
+        -TenantId $tenantId `
+        -Subscription $subscriptionId `
         -EnvironmentName "AzureCloud" 
 }
 function Get-SeList2Task1 {
@@ -123,8 +125,8 @@ function Get-SeList2Task1 {
 
     Get-LoginToAzureRm
 
-    Set-IfNotExistsAzureRmResourceGroup $resourceGroup $location
-    $ctx = (Set-IfNotExistsAzureRmStorageAccount $resourceGroup $location $storageAccountName).Context
+    Set-IfNotExistsAzureRmResourceGroup $resourceGroupName $resourceGroupLocation
+    $ctx = (Set-IfNotExistsAzureRmStorageAccount $resourceGroupName $resourceGroupLocation $storageAccountName).Context
 
     Set-IfNotExistsAzureStorageContainer $containerName $ctx
 
@@ -149,7 +151,7 @@ function Set-IfNotExistsAzureRmSqlServer {
     )
     
     Get-AzureRmSqlServer `
-        -ResourceGroupName $resourceGroup `
+        -ResourceGroupName $resourceGroupName `
         -ServerName $servername `
         -ErrorAction SilentlyContinue `
         -ErrorVariable notPresentAzureRmSqlServer
@@ -159,9 +161,9 @@ function Set-IfNotExistsAzureRmSqlServer {
         Write-Host "[Output]:AzureRmSqlServer with name: $servername creating " -ForegroundColor DarkMagenta
 
         New-AzureRmSqlServer `
-            -ResourceGroupName $resourceGroup `
+            -ResourceGroupName $resourceGroupName `
             -ServerName $servername `
-            -Location $location `
+            -Location $resourceGroupLocation `
             -SqlAdministratorCredentials $sqlAdministratorCredentials
     }
     else {
@@ -177,7 +179,7 @@ function Set-IfNotExistsAzureRmSqlServerFirewallRule {
     )
 
     Get-AzureRmSqlServerFirewallRule `
-        -ResourceGroupName $resourceGroup `
+        -ResourceGroupName $resourceGroupName `
         -ServerName $servername `
         -FirewallRuleName $firewallRuleName `
         -ErrorAction SilentlyContinue `
@@ -188,7 +190,7 @@ function Set-IfNotExistsAzureRmSqlServerFirewallRule {
         Write-Host "[Output]:AzureRmSqlServerFirewallRule with name: $firewallRuleName creating " -ForegroundColor DarkMagenta
 
         New-AzureRmSqlServerFirewallRule `
-            -ResourceGroupName $resourceGroup `
+            -ResourceGroupName $resourceGroupName `
             -ServerName $servername `
             -FirewallRuleName $firewallRuleName `
             -StartIpAddress $startip `
@@ -205,7 +207,7 @@ function Set-IfNotExistsAzureRmSqlDatabase {
     )
 
     Get-AzureRmSqlDatabase `
-        -ResourceGroupName $resourceGroup `
+        -ResourceGroupName $resourceGroupName `
         -ServerName $servername `
         -DatabaseName $databasename `
         -ErrorAction SilentlyContinue `
@@ -216,7 +218,7 @@ function Set-IfNotExistsAzureRmSqlDatabase {
         Write-Host "[Output]:AzureRmSqlDatabase with name: $databasename creating " -ForegroundColor DarkMagenta
 
         New-AzureRmSqlDatabase `
-            -ResourceGroupName $resourceGroup `
+            -ResourceGroupName $resourceGroupName `
             -ServerName $servername `
             -DatabaseName $databasename `
             -RequestedServiceObjectiveName "S0" `
@@ -255,7 +257,7 @@ function Set-IfNotExistsAzureRmSqlDatabaseImport {
     )
 
     Get-AzureRmSqlDatabase `
-        -ResourceGroupName $resourceGroup `
+        -ResourceGroupName $resourceGroupName `
         -ServerName $servername `
         -DatabaseName $databasename `
         -ErrorAction SilentlyContinue `
@@ -266,7 +268,7 @@ function Set-IfNotExistsAzureRmSqlDatabaseImport {
         Write-Host "[Output]:AzureRmSqlDatabaseImport with name: $databasename creating " -ForegroundColor DarkMagenta
 
         $request = New-AzureRmSqlDatabaseImport `
-            -ResourceGroupName $resourceGroup `
+            -ResourceGroupName $resourceGroupName `
             -ServerName $servername `
             -DatabaseName $databasename `
             -DatabaseMaxSizeBytes "262144000" `
@@ -283,7 +285,7 @@ function Set-IfNotExistsAzureRmSqlDatabaseImport {
         # Scale down to S0 after import is complete
         Write-Host "[Output]:AzureRmSqlDatabaseImport. Scale down to S0 after import is complete.." -ForegroundColor DarkGreen
         Set-AzureRmSqlDatabase `
-            -ResourceGroupName $resourceGroup `
+            -ResourceGroupName $resourceGroupName `
             -ServerName $servername `
             -DatabaseName $databasename  `
             -Edition "Standard" `
@@ -305,7 +307,7 @@ function Set-IfExistsAzureRmSqlDatabaseExport {
     )
 
     Get-AzureRmSqlDatabase `
-        -ResourceGroupName $resourceGroup `
+        -ResourceGroupName $resourceGroupName `
         -ServerName $servername `
         -DatabaseName $databasename `
         -ErrorAction SilentlyContinue `
@@ -316,7 +318,7 @@ function Set-IfExistsAzureRmSqlDatabaseExport {
         Write-Host "[Output]:IfExistsAzureRmSqlDatabaseExport with name: $databasename exporting" -ForegroundColor DarkMagenta
 
         $request = New-AzureRmSqlDatabaseExport `
-            -ResourceGroupName $resourceGroup `
+            -ResourceGroupName $resourceGroupName `
             -ServerName $servername `
             -DatabaseName $databasename `
             -StorageKeyType "StorageAccessKey" `
@@ -338,7 +340,7 @@ function Get-AllAzureRmSqlDatabase {
     )
     
     Write-Host "[Output]:[Start] AzureRmSqlServer with name: $servername contains next databases: " -ForegroundColor DarkGreen
-    Get-AzureRmSqlDatabase -ResourceGroupName $resourceGroup -ServerName $servername 
+    Get-AzureRmSqlDatabase -ResourceGroupName $resourceGroupName -ServerName $servername 
     Write-Host "[Output]:[End] AzureRmSqlServer" -ForegroundColor DarkGreen
 }
 function Set-BacpacToBlob {
@@ -346,8 +348,8 @@ function Set-BacpacToBlob {
         [string]$pathToBacpac
     )
     Get-LoginToAzureRm
-    Set-IfNotExistsAzureRmResourceGroup $resourceGroup $location
-    $ctx = (Set-IfNotExistsAzureRmStorageAccount $resourceGroup $location $storageAccountName).Context
+    Set-IfNotExistsAzureRmResourceGroup $resourceGroupName $resourceGroupLocation
+    $ctx = (Set-IfNotExistsAzureRmStorageAccount $resourceGroupName $resourceGroupLocation $storageAccountName).Context
     Set-IfNotExistsAzureStorageContainer $containerName $ctx
     Get-SeAzureStorageBlobNames $containerName $ctx 
     $filepath = Get-ChildItem $pathToBacpac
@@ -375,7 +377,7 @@ function Get-SeList2Task2 {
     $adminlogin = "ServerAdmin"
     $password = "ChangeYourAdminPassword1"
     $passwordSecure = ConvertTo-SecureString -String $password -AsPlainText -Force
-    $storageKey = (Get-AzureRmStorageAccountKey -ResourceGroupName $resourceGroup -StorageAccountName $storageAccountName).Value[0]
+    $storageKey = (Get-AzureRmStorageAccountKey -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName).Value[0]
     # Set server name - the logical server name has to be unique in the system
     # $servername = "server-$(Get-Random)"
     $servername = "server-devops"
@@ -388,7 +390,7 @@ function Get-SeList2Task2 {
     $startip = "0.0.0.0"
     $endip = $ip
 
-    Set-IfNotExistsAzureRmResourceGroup $resourceGroup $location
+    Set-IfNotExistsAzureRmResourceGroup $resourceGroupName $resourceGroupLocation
 
     # Create a server with a system wide unique server name
     $sqlAdministratorCredentials = $(New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $adminlogin, $passwordSecure)
@@ -414,7 +416,7 @@ function Get-SeList2Task2 {
 
 function  Remove-AzureRmResourceGroup {
     Write-Host "[Output]: Remove-AzureRmResourceGroup" -ForegroundColor DarkGreen
-    Remove-AzureRmResourceGroup -ResourceGroupName $resourceGroup -Force 
+    Remove-AzureRmResourceGroup -ResourceGroupName $resourceGroupName -Force 
 }
 
 function Get-SeList2Task3 {
@@ -445,4 +447,16 @@ function Get-SeList2Task3 {
 
     Write-Host "[Output]: Current azure context is:" -ForegroundColor DarkGreen
     Get-AzureRmContext
+}
+
+function Get-SeList2Task4 {
+    Get-LoginToAzureRm
+    Get-AzureRmContext
+    $armTemplatePs1 = Join-Path -Path $PSScriptRoot -ChildPath "task4\deploy.ps1"
+    $armParameters = Join-Path -Path $PSScriptRoot -ChildPath "task4\parameters.json"
+    $armTemplate = Join-Path -Path $PSScriptRoot -ChildPath "task4\template.json"
+    Unblock-File $armTemplatePs1
+    Set-Alias -Name ArmTemplate -Value $armTemplatePs1
+
+    ArmTemplate $subscriptionId $resourceGroupName $resourceGroupLocation "1234" $armTemplate $armParameters
 }

@@ -1,4 +1,5 @@
 $ErrorActionPreference = "Stop"
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
 $ScriptRoot = $PSScriptRoot
 Import-Module -Force (Join-Path $ScriptRoot 'List1\List1') 
 Import-Module -Force (Join-Path $ScriptRoot 'List2\List2') 
@@ -88,8 +89,7 @@ function Show-Menu () {
 }
 
 function Test () {
-    $path = Join-Path -Path $ScriptRoot -ChildPath  "List2"
-    Get-SeList2Task3 $path
+    Get-SeList2Task4
 }
 
 Show-Menu

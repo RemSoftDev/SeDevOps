@@ -4,7 +4,7 @@ Import-Module -Force (Join-Path $ScriptRoot 'CopyVm\CopyVm')
 
 $readHostText = "Choose a step number. Default is 0"
 function Show-Menu () {
-    Write-Host "1: List1 tasks" -ForegroundColor Magenta
+    Write-Host "1: Copy-SeVm" -ForegroundColor Magenta
 }
 
 function Test () {
@@ -19,5 +19,5 @@ if (!$StepNumber) {
 
 switch ( $StepNumber ) {
     0 { Test }
-    1 { }
+    1 { Copy-SeVm "CopyVm" }
 }

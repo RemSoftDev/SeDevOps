@@ -1,11 +1,12 @@
 {
-    "NameOfVm": "t1",
+    "NameOfVm": "t12",
     "NameOfVsExternal": "VS External WI-FI",
-    "NameOfVsIternal": "VS Internal", 
+    "NameOfVsInternal": "VS Internal", 
 
     "CountOfCores": 2,   
-    "UseAuotCheckpoints": false,   
+    "AutomaticCheckpointsEnabled": false,   
     "AutoStart": true,   
     
-    "PathToVhd": "C:\\Users\\oleksandr.dubyna\\OneDrive\\DATA\\VHDs\\Cleanws2016GUI.vhdx"
+    "PathToVhdInitial": "C:\\Users\\oleksandr.dubyna\\OneDrive\\DATA\\VHDs\\Cleanws2016GUI.vhdx",
+    "PathToVhdFolder": "C:\\Users\\oleksandr.dubyna\\Documents\\VMs"
 }

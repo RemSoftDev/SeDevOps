@@ -2,11 +2,13 @@ Class CopyVm
 {
     [string]$NameOfVm
     [string]$NameOfVsExternal
-    [string]$NameOfVsIternal
+    [string]$NameOfVsInternal
 
     [int]$CountOfCores
-    [bool]$UseAuotCheckpoints
+    [bool]$AutomaticCheckpointsEnabled
     [bool]$AutoStart
 
-    [string]$PathToVhd
+    [string]$PathToVhdInitial
+    [string]$PathToVhdNew
+    [string]$PathToVhdFolder
 }

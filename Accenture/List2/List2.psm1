@@ -414,8 +414,8 @@ function Get-SeList2Task2 {
     Set-IfExistsAzureRmSqlDatabaseExport $servername $databasenameExport $storageKey $bacpacUriExport $adminlogin $passwordSecure
 }
 
-function  Remove-AzureRmResourceGroup {
-    Write-Host "[Output]: Remove-AzureRmResourceGroup" -ForegroundColor DarkGreen
+function  Remove-SeAzureRmResourceGroup {
+    Write-Host "[Output]: Remove-AzureRmResourceGroup with name: $resourceGroupName" -ForegroundColor DarkGreen
     Remove-AzureRmResourceGroup -ResourceGroupName $resourceGroupName -Force 
 }
 

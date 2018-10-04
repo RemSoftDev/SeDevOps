@@ -1,4 +1,4 @@
-function New-SE_StaticModule {
+function New-SeStaticModule {
     param (
         [string]$ModuleName,
         [string]$ModuleRootPath,
@@ -30,5 +30,35 @@ function New-SE_StaticModule {
     New-ModuleManifest -Path $pathToPsd1 -RootModule $psmFileName -Author $Author -CompanyName $CompanyName
 }
 
-$pathToModule = Join-Path -Path (Resolve-Path .) -ChildPath "Accenture"
-New-SE_StaticModule "List2" $pathToModule
+function New-SeCreateSubFolders {
+    param (
+        [string]$ModuleName,
+        [string]$ModuleRootPath
+    )
+    
+    $path = Join-Path -Path $ModuleRootPath -ChildPath $ModuleName
+    $pathToClasses = Join-Path -Path $path -ChildPath "Classes"
+    $pathToConfigs = Join-Path -Path $path -ChildPath "Configs"
+  
+    New-Item -ItemType directory -Path $pathToClasses
+    New-Item -ItemType directory -Path $pathToConfigs
+}
+
+function New-Se {
+    $pathBase = Resolve-Path .
+
+    $pathsArray = New-Object string[] 10
+    $pathsArray[0] = Join-Path -Path $pathBase -ChildPath "Accenture"
+    $pathsArray[1] = Join-Path -Path $pathBase -ChildPath "HyperV"
+    
+    $ModuleRootPath = $pathsArray[1]
+    $ModuleName = "CopyVm"
+    
+    $pathTest = Join-Path -Path $ModuleRootPath -ChildPath $ModuleName
+    if (!(Test-Path -Path $pathTest )) {
+        New-SeStaticModule $ModuleName $ModuleRootPath
+        New-SeCreateSubFolders $ModuleName $ModuleRootPath
+    }
+}
+
+New-Se

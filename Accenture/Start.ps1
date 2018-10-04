@@ -26,16 +26,16 @@ function Get-List1 () {
     switch ( $StepNumber ) {
         0 {  }
         1 {     
-            $path = Join-Path -Path $ScriptRoot -ChildPath  "List1\task1.xml"
+            $path = Join-Path -Path $ScriptRoot -ChildPath  "List1\Configs\task1.xml"
             Copy-SeFile 3 $path 
             Set-SeValueForLineorFiles 3 "123" $path 
         }
         2 { 
-            $path = Join-Path -Path $ScriptRoot -ChildPath  "List1\task2.json"
+            $path = Join-Path -Path $ScriptRoot -ChildPath  "List1\Configs\task2.json"
             Set-SeTask2 $path
         }
         3 { 
-            $path = Join-Path -Path $ScriptRoot -ChildPath  "List1\task3.json"
+            $path = Join-Path -Path $ScriptRoot -ChildPath  "List1\Configs\task3.json"
             Get-SeTask3 $path
         }
         4 { 

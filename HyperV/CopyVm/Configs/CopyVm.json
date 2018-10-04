@@ -1,0 +1,11 @@
+{
+    "NameOfVm": "t1",
+    "NameOfVsExternal": "VS External WI-FI",
+    "NameOfVsIternal": "VS Internal", 
+
+    "CountOfCores": 2,   
+    "UseAuotCheckpoints": false,   
+    "AutoStart": true,   
+    
+    "PathToVhd": "C:\\Users\\oleksandr.dubyna\\OneDrive\\DATA\\VHDs\\Cleanws2016GUI.vhdx"
+}

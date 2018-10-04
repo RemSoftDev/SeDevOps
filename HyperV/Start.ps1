@@ -8,7 +8,7 @@ function Show-Menu () {
 }
 
 function Test () {
-    Copy-SeVm "CopyVm"
+
 }
 
 Show-Menu

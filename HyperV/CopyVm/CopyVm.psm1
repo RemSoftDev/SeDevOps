@@ -8,23 +8,24 @@ function Copy-SeVm {
     $config = [CopyVm](Get-Content $pathToConfig | ConvertFrom-Json)
     Write-Host ("Config file have been read succesfully with path: {0}" -f $pathToConfig) -ForegroundColor DarkGreen
     
-    # Copy-SeVhd $config
+    Copy-SeVhd $config
 
-    # New-VM `
-    #     -Name $config.NameOfVm `
-    #     -MemoryStartupBytes 1GB `
-    #     -BootDevice "VHD" `
-    #     -VHDPath $config.PathToVhdNew `
-    #     -Path $config.PathToVhdFolder `
-    #     -Generation 2 `
-    #     -Switch $config.NameOfVsExternal
+    New-VM `
+        -Name $config.NameOfVm `
+        -MemoryStartupBytes 1GB `
+        -BootDevice "VHD" `
+        -VHDPath $config.PathToVhdNew `
+        -Path $config.PathToVhdFolder `
+        -Generation 2 `
+        -Switch $config.NameOfVsExternal
 
-    # Set-VMProcessor $config.NameOfVm -Count $config.CountOfCores
-    # Set-SeVsInternal $config
+    Set-VMProcessor $config.NameOfVm -Count $config.CountOfCores
+    Set-SeVsInternal $config
     Set-VM -Name $config.NameOfVm -AutomaticCheckpointsEnabled $config.AutomaticCheckpointsEnabled
     
     if ($config.AutoStart -eq $true) {
         Start-VM -Name $config.NameOfVm
+        Write-Host ("[Info] VM started with name: {0}" -f $config.NameOfVm) -ForegroundColor DarkGreen
     }
 }
 
@@ -36,7 +37,7 @@ function Set-SeVsInternal {
     if ($config.NameOfVsInternal) {
         Set-SeNewVirtualSwitchIfNotExsists $config.NameOfVsInternal Internal
         Add-VMNetworkAdapter -VMName $config.NameOfVm -Name $config.NameOfVsInternal -SwitchName $config.NameOfVsInternal
-        Write-Host ("[Info] Network adapter was succesfylly added with name: {0}" -f $name) -ForegroundColor DarkGreen
+        Write-Host ("[Info] Network adapter was succesfylly added with name: {0}" -f $config.NameOfVsInternal) -ForegroundColor DarkGreen
     }
 }
 

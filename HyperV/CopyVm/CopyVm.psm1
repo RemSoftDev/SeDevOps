@@ -12,12 +12,12 @@ function Copy-SeVm {
 
     New-VM `
         -Name $config.NameOfVm `
-        -MemoryStartupBytes 1GB `
+        -MemoryStartupBytes 1073741824 `
         -BootDevice "VHD" `
         -VHDPath $config.PathToVhdNew `
         -Path $config.PathToVhdFolder `
         -Generation 2 `
-        -Switch $config.NameOfVsExternal
+        -Switch $config.NameOfVsExternal -Verbose
 
     Set-VMProcessor $config.NameOfVm -Count $config.CountOfCores
     Set-SeVsInternal $config
@@ -26,9 +26,34 @@ function Copy-SeVm {
     if ($config.AutoStart -eq $true) {
         Start-VM -Name $config.NameOfVm
         Write-Host ("[Info] VM started with name: {0}" -f $config.NameOfVm) -ForegroundColor DarkGreen
+
+        do {Start-Sleep -milliseconds 100} 
+        until ((Get-VMIntegrationService $config.NameOfVm | Where-Object {
+                    $_.name -eq "Heartbeat"
+                }).PrimaryStatusDescription -eq "OK")
+    
+        Set-SeOther $config
     }
 }
 
+function Set-SeOther {
+    param (
+        [CopyVm]$config
+    )
+
+    $secpasswd = ConvertTo-SecureString $config.PcUserPassword -AsPlainText -Force
+    $mycreds = New-Object System.Management.Automation.PSCredential ($config.PcUserLogin, $secpasswd)
+
+    Invoke-Command `
+        -VMName $config.NameOfVm `
+        -ScriptBlock { param($PcTimeZone) Set-TimeZone -Name $PcTimeZone } `
+        -ArgumentList $config.PcTimeZone `
+        -Credential $mycreds
+
+    //TODo show files extensions
+    //TODo disable auto updates windows
+    
+}
 function Set-SeVsInternal {
     param (
         [CopyVm]$config

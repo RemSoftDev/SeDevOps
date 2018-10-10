@@ -4,6 +4,10 @@ Class CopyVm
     [string]$NameOfVsExternal
     [string]$NameOfVsInternal
 
+    [string]$PcUserLogin
+    [string]$PcUserPassword
+    [string]$PcTimeZone
+    
     [int]$CountOfCores
     [bool]$AutomaticCheckpointsEnabled
     [bool]$AutoStart

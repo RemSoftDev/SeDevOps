@@ -1,7 +1,11 @@
 {
-    "NameOfVm": "t12",
+    "NameOfVm": "t3",
     "NameOfVsExternal": "VS External WI-FI",
     "NameOfVsInternal": "VS Internal", 
+
+    "PcUserLogin": "Administrator", 
+    "PcUserPassword": "1qaz!QAZ", 
+    "PcTimeZone": "FLE Standard Time",
 
     "CountOfCores": 2,   
     "AutomaticCheckpointsEnabled": false,   

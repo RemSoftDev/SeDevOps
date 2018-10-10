@@ -48,12 +48,37 @@ function Set-SeOther {
         -VMName $config.NameOfVm `
         -ScriptBlock { param($PcTimeZone) Set-TimeZone -Name $PcTimeZone } `
         -ArgumentList $config.PcTimeZone `
-        -Credential $mycreds
+        -Credential $mycreds      
+    Write-Host ("[Info] VM TimeZone was setted to: {0}" -f $config.PcTimeZone) -ForegroundColor DarkGreen
 
-    //TODo show files extensions
-    //TODo disable auto updates windows
-    
+    Invoke-Command `
+        -VMName $config.NameOfVm `
+        -ScriptBlock ${function:Set-FileExtensions} `
+        -Credential $mycreds
+    Write-Host ("[Info] VM FileExtensions was setted to: show") -ForegroundColor DarkGreen
+
+    Invoke-Command `
+        -VMName $config.NameOfVm `
+        -ScriptBlock ${function:Remove-WindowsAutoUpdates} `
+        -Credential $mycreds  
+    Write-Host ("[Info] VM WindowsAutoUpdates was setted to: disabled") -ForegroundColor DarkGreen
 }
+
+function Remove-WindowsAutoUpdates {
+    Stop-Service wuauserv
+    Set-Service wuauserv -StartupType disabled
+}
+function Set-WindowsAutoUpdates {
+    Stop-Service wuauserv
+    Set-Service wuauserv -StartupType manual
+}
+function Set-FileExtensions {
+    Push-Location
+    Set-Location HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    Set-ItemProperty . HideFileExt "0"
+    Pop-Location
+}
+
 function Set-SeVsInternal {
     param (
         [CopyVm]$config

@@ -2,7 +2,6 @@ function Copy-SeVm {
     param (
         [string]$NameOfConfig
     )
-    
     $ScriptRoot = $PSScriptRoot
     $pathToConfig = Join-Path -Path $ScriptRoot -ChildPath "Configs\$NameOfConfig.json"
     $config = [CopyVm](Get-Content $pathToConfig | ConvertFrom-Json)
@@ -36,6 +35,26 @@ function Copy-SeVm {
     }
 }
 
+function Set-SeNaNames {
+    Get-NetAdapter | ForEach-Object {
+        $oldName = $_.Name 
+
+        if ($_.LinkSpeed -match "Gbps") {
+            $newName = "Internal {0}" -f $oldName
+            $_ | Rename-NetAdapter -NewName $newName
+        }
+
+        if ($_.LinkSpeed -match "Mbps") {
+            $newName = "External {0}" -f $oldName
+            $_ | Rename-NetAdapter -NewName $newName
+        }
+    }   
+}
+
+function Enable-NumLock {
+    Set-ItemProperty -Path 'Registry::HKU\.DEFAULT\Control Panel\Keyboard' -Name "InitialKeyboardIndicators" -Value "2"
+}
+
 function Set-SeOther {
     param (
         [CopyVm]$config
@@ -62,6 +81,18 @@ function Set-SeOther {
         -ScriptBlock ${function:Remove-WindowsAutoUpdates} `
         -Credential $mycreds  
     Write-Host ("[Info] VM WindowsAutoUpdates was setted to: disabled") -ForegroundColor DarkGreen
+
+    Invoke-Command `
+        -VMName $config.NameOfVm `
+        -ScriptBlock ${function:Set-SeNaNames} `
+        -Credential $mycreds  
+    Write-Host ("[Info] VM network adapters normal names") -ForegroundColor DarkGreen
+    
+    Invoke-Command `
+        -VMName $config.NameOfVm `
+        -ScriptBlock ${function:Enable-NumLock} `
+        -Credential $mycreds  
+    Write-Host ("[Info] VM Enable NumLock") -ForegroundColor DarkGreen
 }
 
 function Remove-WindowsAutoUpdates {

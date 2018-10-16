@@ -52,7 +52,7 @@ function New-Se {
     $pathsArray[1] = Join-Path -Path $pathBase -ChildPath "HyperV"
     
     $ModuleRootPath = $pathsArray[1]
-    $ModuleName = "CopyVm"
+    $ModuleName = "TopoVm"
     
     $pathTest = Join-Path -Path $ModuleRootPath -ChildPath $ModuleName
     if (!(Test-Path -Path $pathTest )) {

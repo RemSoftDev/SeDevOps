@@ -27,7 +27,12 @@ function New-SeStaticModule {
 
     New-Item -ItemType File -Path $pathToPsm1
 
-    New-ModuleManifest -Path $pathToPsd1 -RootModule $psmFileName -Author $Author -CompanyName $CompanyName
+    New-ModuleManifest `
+        -Path $pathToPsd1 `
+        -RootModule $psmFileName `
+        -Author $Author `
+        -CompanyName $CompanyName `
+        -ScriptsToProcess "Classes\$ModuleName.class.ps1"
 }
 
 function New-SeCreateSubFolders {
@@ -37,11 +42,17 @@ function New-SeCreateSubFolders {
     )
     
     $path = Join-Path -Path $ModuleRootPath -ChildPath $ModuleName
-    $pathToClasses = Join-Path -Path $path -ChildPath "Classes"
-    $pathToConfigs = Join-Path -Path $path -ChildPath "Configs"
+    $pathToClassesFolder = Join-Path -Path $path -ChildPath "Classes"
+    $pathToConfigsFolder = Join-Path -Path $path -ChildPath "Configs"
   
-    New-Item -ItemType directory -Path $pathToClasses
-    New-Item -ItemType directory -Path $pathToConfigs
+    New-Item -ItemType directory -Path $pathToClassesFolder
+    New-Item -ItemType directory -Path $pathToConfigsFolder
+
+    $pathToClassesFile = Join-Path -Path $pathToClassesFolder -ChildPath "$ModuleName.class.ps1"
+    $pathToConfigsFile = Join-Path -Path $pathToConfigsFolder -ChildPath "$ModuleName.json"
+
+    New-Item -ItemType File -Path $pathToClassesFile 
+    New-Item -ItemType File -Path $pathToConfigsFile 
 }
 
 function New-Se {
@@ -52,7 +63,7 @@ function New-Se {
     $pathsArray[1] = Join-Path -Path $pathBase -ChildPath "HyperV"
     
     $ModuleRootPath = $pathsArray[1]
-    $ModuleName = "TopoVm"
+    $ModuleName = "ClearVm2"
     
     $pathTest = Join-Path -Path $ModuleRootPath -ChildPath $ModuleName
     if (!(Test-Path -Path $pathTest )) {

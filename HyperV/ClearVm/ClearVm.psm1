@@ -62,7 +62,7 @@ function Start-ResizeVhd {
     Resize-VHD -Path $pathToVhd -SizeBytes 127GB
 }
 
-function Start {
+function Start-CleanupVMandVHD {
     param (
         [string]$config
 

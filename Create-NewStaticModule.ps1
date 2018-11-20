@@ -60,10 +60,10 @@ function New-Se {
 
     $pathsArray = New-Object string[] 10
     $pathsArray[0] = Join-Path -Path $pathBase -ChildPath "Accenture"
-    $pathsArray[1] = Join-Path -Path $pathBase -ChildPath "HyperV"
+    $pathsArray[1] = Join-Path -Path $pathBase -ChildPath "Azure"
     
     $ModuleRootPath = $pathsArray[1]
-    $ModuleName = "ClearVm2"
+    $ModuleName = "Core"
     
     $pathTest = Join-Path -Path $ModuleRootPath -ChildPath $ModuleName
     if (!(Test-Path -Path $pathTest )) {

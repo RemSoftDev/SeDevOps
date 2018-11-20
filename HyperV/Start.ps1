@@ -13,6 +13,7 @@ function Show-Menu () {
 
 function Test () {
     Start-ResizeVhd "C:\Users\Public\Documents\Hyper-V\Virtual hard disks\Cleanws2016GUI.vhdx"
+    Start-CleanupVMandVHD 
 }
 
 Show-Menu

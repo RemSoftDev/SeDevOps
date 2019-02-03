@@ -65,7 +65,7 @@ function Start-ResizeVhd {
 function Start-CleanupVMandVHD {
     param (
         [string]$config
-
+    )
     $vmName = $config.NameOfVm
 
     Get-VMSnapshot  -VMName $vmName | Remove-VMSnapshot

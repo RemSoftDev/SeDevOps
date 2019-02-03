@@ -1,0 +1,2 @@
+Export-StartLayout -Path D:\git\SeDevOps\System\SetupAfterInstall\Configs\StartLayout2.xml
+Import-StartLayout -LayoutPath   D:\git\SeDevOps\System\SetupAfterInstall\Configs\StartLayout.xml -MountPath $env:SystemDrive

@@ -5,6 +5,7 @@ $ScriptRoot = $PSScriptRoot
 Import-Module -Force (Join-Path $ScriptRoot 'CopyVm\CopyVm') 
 # Import-Module -Force (Join-Path $ScriptRoot 'TopoVm\TopoVm') 
 Import-Module -Force (Join-Path $ScriptRoot 'ClearVm\ClearVm') 
+Import-Module -Force (Join-Path $ScriptRoot 'Setup') 
 
 $readHostText = "Choose a step number. Default is 0"
 function Show-Menu () {
@@ -25,4 +26,6 @@ if (!$StepNumber) {
 switch ( $StepNumber ) {
     0 { Test }
     1 { Copy-SeVm "CopyVm" }
+    2 { Set-SeVMHost }
+    3 { Import-SeVMs }
 }

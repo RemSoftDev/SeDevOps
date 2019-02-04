@@ -48,6 +48,8 @@ set interfaces openvpn vtun0 server name-server 192.168.2.1
 set interfaces openvpn vtun0 openvpn-option --tls-server
 set interfaces openvpn vtun0 openvpn-option "--persist-key"
 set interfaces openvpn vtun0 openvpn-option "--persist-tun"
+set interfaces openvpn vtun0 openvpn-option "--duplicate-cn"
+
 
 set interfaces openvpn vtun0 tls ca-cert-file /config/auth/cacert.pem
 set interfaces openvpn vtun0 tls cert-file /config/auth/server.pem

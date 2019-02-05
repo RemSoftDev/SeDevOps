@@ -55,6 +55,52 @@ function New-SeCreateSubFolders {
     New-Item -ItemType File -Path $pathToConfigsFile 
 }
 
+function Add-SeStartModule {
+    param (
+        [string]$pathToStart,
+        [string]$ModuleName
+    )
+    $ScriptRoot = '$ScriptRoot'
+    $ImportModule = "Import-Module -Force (Join-Path $ScriptRoot '" + $ModuleName + "')" 
+    if (Test-Path $pathToStart) {
+
+        $overlap = Select-String -Path $pathToStart -Pattern $ImportModule -SimpleMatch
+
+        if ($overlap.length -eq 0) {
+            $overlapForInsert = Select-String -Path $pathToStart -Pattern  "Import-Module"
+            $lintOfLastImportedModule = $overlapForInsert[$overlapForInsert.length - 1].LineNumber
+            $fileContent = Get-Content $pathToStart
+            $fileContent[$lintOfLastImportedModule] += $ImportModule + "`r`n"
+            $fileContent | Set-Content $pathToStart
+
+            Write-Host "Added" -ForegroundColor Green
+            Write-Host $ImportModule
+        }
+    }
+}
+
+function Add-SeStartFile {
+    param (
+        [string]$pathToStart,
+        [string]$pathToDefaultStart
+    )
+
+    if (-not (Test-Path $pathToStart)) {
+        Copy-Item -Path $pathToDefaultStart -Destination $pathToStart
+    }
+}
+function Update-SeStart {
+    param (
+        [string]$pathToModuleFolder,
+        [string]$ModuleName
+    )
+    $start = "Start.ps1"
+    $pathToDefaultStart = Join-Path -Path $PSScriptRoot -ChildPath $start
+    $pathToStart = Join-Path -Path $pathToModuleFolder -ChildPath $start
+
+    Add-SeStartFile $pathToStart $pathToDefaultStart
+    Add-SeStartModule $pathToStart $ModuleName      
+}
 function New-Se {
     $pathBase = Resolve-Path .
 
@@ -63,8 +109,9 @@ function New-Se {
     $pathsArray[1] = Join-Path -Path $pathBase -ChildPath "Azure"
     $pathsArray[2] = Join-Path -Path $pathBase -ChildPath "System"
     $pathsArray[3] = Join-Path -Path $pathBase -ChildPath "HyperV"
+    $pathsArray[4] = Join-Path -Path $pathBase -ChildPath "sql"
     
-    $ModuleRootPath = $pathsArray[3]
+    $ModuleRootPath = $pathsArray[4]
     $ModuleName = "Setup"
     
     $pathTest = Join-Path -Path $ModuleRootPath -ChildPath $ModuleName
@@ -72,6 +119,8 @@ function New-Se {
         New-SeStaticModule $ModuleName $ModuleRootPath
         New-SeCreateSubFolders $ModuleName $ModuleRootPath
     }
+
+    Update-SeStart $ModuleRootPath $ModuleName
 }
 
 New-Se

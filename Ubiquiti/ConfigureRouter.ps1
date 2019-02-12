@@ -1,19 +1,16 @@
 scp.exe -r ubnt@192.168.2.1:/config/auth D:\git\SeDevOps\Ubiquiti\authCopy
-
+scp.exe ubnt@192.168.2.1:/etc/hosts D:\git\SeDevOps\Ubiquiti\hosts
 ssh ubnt@192.168.2.1
 
 # https://help.ubnt.com/hc/en-us/articles/115015971688-EdgeRouter-OpenVPN-Server
 
-./CA.pl -newca
-PEM Passphrase: 1qaz!QAZ
-Country Name (2 letter code) [AU]:LV
-State or Province Name (full name) [Some-State]:Riga
-Locality Name (eg, city) []:Riga
-Organization Name (eg, company) [Internet Widgits Pty Ltd]:csharp.company
-Organizational Unit Name (eg, section) []:
-Common Name (e.g. server FQDN or YOUR name) []:csharp.company
-Email Address []:struggleendlessly@hotmail.com
+LV
+Riga
+csharp.company
+struggleendlessly@hotmail.com
 
+# https://help.ubnt.com/hc/en-us/articles/115015971688-EdgeRouter-OpenVPN-Server
+openssl rsa -in /config/auth/client_phone.key -out /config/auth/client_phone-no-pass.key
 # UDP
 
 set firewall name WAN_LOCAL rule 40 action accept
@@ -49,7 +46,6 @@ set interfaces openvpn vtun0 openvpn-option --tls-server
 set interfaces openvpn vtun0 openvpn-option "--persist-key"
 set interfaces openvpn vtun0 openvpn-option "--persist-tun"
 set interfaces openvpn vtun0 openvpn-option "--duplicate-cn"
-
 
 set interfaces openvpn vtun0 tls ca-cert-file /config/auth/cacert.pem
 set interfaces openvpn vtun0 tls cert-file /config/auth/server.pem

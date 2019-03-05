@@ -1,3 +1,5 @@
+Set-ExecutionPolicy Unrestricted -Scope Process
+Set-ExecutionPolicy Unrestricted -Scope LocalMachine
 Set-ExecutionPolicy Unrestricted -Scope CurrentUser
 $ErrorActionPreference = "Stop"
 $ScriptRoot = $PSScriptRoot
